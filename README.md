@@ -1,6 +1,6 @@
 # Broadlink Code Manager
 
-[![release](https://img.shields.io/github/v/release/netrene/broadlink-code-manager?style=for-the-badge)](https://github.com/netrene/broadlink-code-manager/releases)
+[![release](https://img.shields.io/github/v/release/Clauszeit/broadlink-manager?style=for-the-badge)](https://github.com/Clauszeit/broadlink-manager/releases)
 [![hacs](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)](https://www.hacs.xyz/)
 
 A Home Assistant custom integration that adds a **Broadlink Codes** panel to the
@@ -31,6 +31,9 @@ services**. It **only reads** `.storage`; it never writes to it directly.
 - **Export** a remote to JSON (optionally including the raw base64 codes, so the
   export is a real backup).
 - **Search / filter** across all commands and a manual **Refresh**.
+- **Home Assistant devices and buttons**: each learned device group appears as
+  a logical device linked to its Broadlink transmitter; each command is a
+  stateless `button.*` entity. Pressing it calls `remote.send_command`.
 
 Multiple Broadlink remotes are supported.
 
@@ -45,7 +48,7 @@ Multiple Broadlink remotes are supported.
 ### HACS (custom repository)
 
 1. HACS → **⋮** → **Custom repositories**.
-2. Add `https://github.com/netrene/broadlink-code-manager` with category
+2. Add `https://github.com/Clauszeit/broadlink-manager` with category
    **Integration**.
 3. Install **Broadlink Code Manager**, then restart Home Assistant.
 4. **Settings → Devices & Services → Add Integration → Broadlink Code Manager**
@@ -65,11 +68,15 @@ directory, restart, then add the integration as in step 4 above.
 - Codes are loaded read-only via Home Assistant's storage helper for display and
   export. All changes go through `remote.send_command` / `remote.learn_command` /
   `remote.delete_command`.
+- Command buttons refresh every 30 seconds. New commands appear automatically;
+  deleted commands and their empty logical devices are removed. A group or
+  command rename creates a new HA device or entity because the names are the
+  identifiers in Broadlink's code store. A disabled button remains disabled
+  until it is enabled in Home Assistant.
 
 ## Roadmap
 
 - Bulk delete of selected commands.
-- Optional `button.*` entities per learned command.
 - Command rename (learn-copy-delete assisted).
 
 ## Disclaimer
@@ -79,3 +86,5 @@ Experimental, community project. Not affiliated with Broadlink or Home Assistant
 ## License
 
 [MIT](LICENSE)
+
+This fork is based on [netrene/broadlink-code-manager](https://github.com/netrene/broadlink-code-manager).

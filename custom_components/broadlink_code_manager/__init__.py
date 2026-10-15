@@ -1,8 +1,8 @@
 """The Broadlink Code Manager integration.
 
-Registers a read-only WebSocket API and an admin sidebar panel that lets you
-inventory, test, learn, delete and export Broadlink IR/RF codes. All mutating
-actions go through the official `remote.*` services; `.storage` is only read.
+Registers a read-only WebSocket API, command buttons and an admin sidebar panel.
+All mutating actions go through the official `remote.*` services; `.storage`
+is only read.
 """
 
 from __future__ import annotations
@@ -26,6 +26,7 @@ from .const import (
 )
 
 _LOGGER = logging.getLogger(__name__)
+PLATFORMS = ["button"]
 
 # Bump when panel.js changes so browsers reload it instead of using cache.
 PANEL_VERSION = "0.2.5"
@@ -56,11 +57,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             config={},
         )
 
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Remove the sidebar panel on unload."""
+    if not await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
+        return False
     if PANEL_URL_PATH in hass.data.get("frontend_panels", {}):
         frontend.async_remove_panel(hass, PANEL_URL_PATH)
     return True
